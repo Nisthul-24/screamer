@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Screaming Volume Slider</title>
+  <title>Screaming Volume Slider Settings</title>
   <style>
     :root {
-      --bg: #070b14;
+      --bg: #090d16;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --border: rgba(46, 230, 214, 0.2);
       --text: #e8f4ff;
       --muted: #8aa3bd;
       --accent: #2ee6d6;
       --hot: #ff5a3d;
+      --gold: #ffc857;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      width: 320px;
-      padding: 1rem 1.05rem 1.1rem;
-      background: linear-gradient(165deg, #0a1220, #070b14 60%);
+      width: 330px;
+      padding: 1.1rem 1.15rem 1.25rem;
+      background: linear-gradient(165deg, #0d1627, #070b14 70%);
       color: var(--text);
       font-family: "Segoe UI", system-ui, sans-serif;
     }
@@ -25,62 +28,160 @@
       margin: 0;
       font-size: 0.95rem;
       letter-spacing: 0.06em;
+      color: #fff;
     }
     .tag {
-      margin: 0.4rem 0 0.9rem;
+      margin: 0.35rem 0 0.9rem;
       color: var(--muted);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       line-height: 1.35;
     }
-    label.row {
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem 0.9rem;
+      margin-bottom: 0.85rem;
+    }
+    .row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 0.7rem 0.75rem;
-      border-radius: 12px;
-      border: 1px solid rgba(46, 230, 214, 0.25);
-      background: rgba(46, 230, 214, 0.06);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
+    }
+    .row + .row {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .field-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .field-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .field-val {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .field-desc {
+      font-size: 0.73rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.3;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      accent-color: var(--accent);
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+    }
+    select {
+      background: #141f33;
+      color: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
     }
     input[type="checkbox"] {
       width: 18px;
       height: 18px;
       accent-color: var(--hot);
+      cursor: pointer;
+    }
+    .btn-secondary {
+      width: 100%;
+      padding: 0.55rem;
+      border: 1px solid rgba(255, 90, 61, 0.35);
+      background: rgba(255, 90, 61, 0.08);
+      color: #ffd7c8;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 90, 61, 0.2);
+      border-color: var(--hot);
     }
     ol {
-      margin: 0.9rem 0 0;
+      margin: 0.6rem 0 0;
       padding-left: 1.15rem;
       color: var(--muted);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       line-height: 1.45;
     }
     .privacy {
-      margin-top: 0.85rem;
+      margin-top: 0.8rem;
       font-size: 0.72rem;
-      color: #6d8299;
+      color: #5f748c;
       line-height: 1.35;
     }
   </style>
 </head>
 <body>
   <h1>THE SCREAMING VOLUME SLIDER™</h1>
-  <p class="tag">On YouTube (and other sites), trying to change volume triggers scream mode. Your scream sound level directly becomes the video volume! High scream = high volume. Soft scream = low volume.</p>
+  <p class="tag">Your scream sound level directly becomes the video volume. Adjust sensitivity and preferences below!</p>
 
-  <label class="row">
-    <span>Extension active</span>
-    <input id="enabled" type="checkbox" checked />
-  </label>
+  <div class="card">
+    <label class="row">
+      <span>Extension Active</span>
+      <input id="enabled" type="checkbox" checked />
+    </label>
+
+    <div class="field-block">
+      <div class="field-header">
+        <span>🎚️ Mic Sensitivity</span>
+        <span id="sensitivityVal" class="field-val">0.60x (Normal)</span>
+      </div>
+      <input id="sensitivity" type="range" min="0.2" max="2.0" step="0.05" value="0.6" />
+      <p class="field-desc">Lower = requires harder scream. Higher = softer speaking triggers high volume.</p>
+    </div>
+
+    <div class="row" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+      <span>⏱️ Scream Duration</span>
+      <select id="screamDuration">
+        <option value="2000">2.0s (Fast)</option>
+        <option value="3500" selected>3.5s (Standard)</option>
+        <option value="5000">5.0s (Long)</option>
+      </select>
+    </div>
+
+    <label class="row">
+      <span>😈 Pre-Scream Roast</span>
+      <input id="roastEnabled" type="checkbox" checked />
+    </label>
+  </div>
+
+  <button id="resetSettings" class="btn-secondary" type="button">Reset Defaults</button>
 
   <ol>
-    <li>Open YouTube (or any video site).</li>
-    <li>Try to change the volume — get roasted.</li>
-    <li>Scream into your microphone.</li>
-    <li>Your scream sound level becomes the new video volume!</li>
+    <li>Change volume on YouTube / video site.</li>
+    <li>Scream into your microphone!</li>
+    <li>Sound level becomes the video volume.</li>
   </ol>
 
-  <p class="privacy">Mic is used only during scream mode. Audio is analyzed locally — recordings are never stored.</p>
+  <p class="privacy">Audio is analyzed locally in your browser. Recordings are never stored or transmitted.</p>
 
   <script src="popup.js"></script>
 </body>

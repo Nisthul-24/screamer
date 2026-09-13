@@ -129,21 +129,100 @@
   font-size: 0.75rem;
 }
 
-#scream-volume-root .sv-cancel {
+#scream-volume-root .sv-card-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+#scream-volume-root .sv-settings-btn {
   appearance: none;
-  border: 1px solid rgba(138, 163, 189, 0.35);
-  background: transparent;
-  color: #e8f4ff;
+  border: 1px solid rgba(46, 230, 214, 0.35);
+  background: rgba(46, 230, 214, 0.08);
+  color: #2ee6d6;
   border-radius: 10px;
-  padding: 0.55rem 1rem;
+  padding: 0.55rem 0.85rem;
   cursor: pointer;
   font-weight: 700;
   letter-spacing: 0.06em;
   font-size: 0.75rem;
+  transition: all 0.2s ease;
 }
 
-#scream-volume-root .sv-cancel:hover {
+#scream-volume-root .sv-settings-btn:hover {
+  background: rgba(46, 230, 214, 0.2);
   border-color: #2ee6d6;
+}
+
+#scream-volume-root .sv-settings-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.85rem 0;
+  text-align: left;
+}
+
+#scream-volume-root .sv-setting-item {
+  margin-bottom: 0.85rem;
+}
+
+#scream-volume-root .sv-setting-item:last-child {
+  margin-bottom: 0;
+}
+
+#scream-volume-root .sv-setting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+#scream-volume-root .sv-setting-val {
+  color: #2ee6d6;
+  font-weight: 800;
+}
+
+#scream-volume-root .sv-setting-desc {
+  font-size: 0.72rem;
+  color: #8aa3bd;
+  margin: 0.2rem 0 0.4rem;
+}
+
+#scream-volume-root .sv-setting-item input[type="range"] {
+  width: 100%;
+  accent-color: #2ee6d6;
+  cursor: pointer;
+}
+
+#scream-volume-root .sv-setting-item select {
+  width: 100%;
+  background: #141f33;
+  color: #fff;
+  border: 1px solid rgba(46, 230, 214, 0.3);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+#scream-volume-root .sv-setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+#scream-volume-root .sv-setting-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #ff5a3d;
+  cursor: pointer;
 }
 
 #scream-volume-root .sv-phase[hidden] {

@@ -215,25 +215,45 @@
     if (score <= 40) return { emoji: '🙂', text: 'Mildly annoyed' };
     if (score <= 60) return { emoji: '😠', text: 'Getting angry' };
     if (score <= 80) return { emoji: '🔥', text: 'Very angry' };
-    if (score <= 95) return { emoji: '💀', text: 'Absolutely furious' };
-    return { emoji: '☢️', text: 'UNNECESSARY ANGER' };
-  }
-
-  let toastHost = null;
+    if (score <= 95) return { emoji: '💀', text: 'Absolutely furi  let toastHost = null;
   let overlay = null;
   let analyzer = null;
   let screamTimer = null;
   let briefingTimer = null;
   let busy = false;
   let enabled = true;
-  let pendingRequest = null; // { current, requested, required, troll, deltaLine }
+  let sensitivity = 0.6;
+  let listenMs = 3500;
+  let roastEnabled = true;
+  let pendingRequest = null; // { current, requested, troll, deltaLine }
+  let activePhaseBeforeSettings = 'briefing';
+
+  function loadSettings() {
+    try {
+      chrome.storage.sync.get(
+        { enabled: true, sensitivity: 0.6, screamDuration: 3500, roastEnabled: true },
+        (data) => {
+          enabled = data.enabled !== false;
+          sensitivity = Number(data.sensitivity) || 0.6;
+          listenMs = Number(data.screamDuration) || 3500;
+          roastEnabled = data.roastEnabled !== false;
+          updateOverlaySettingsUI();
+        }
+      );
+    } catch (_) {
+      /* ignore */
+    }
+  }
+
+  loadSettings();
 
   try {
-    chrome.storage.sync.get({ enabled: true }, (data) => {
-      enabled = data.enabled !== false;
-    });
     chrome.storage.onChanged.addListener((changes) => {
       if (changes.enabled) enabled = changes.enabled.newValue !== false;
+      if (changes.sensitivity) sensitivity = Number(changes.sensitivity.newValue) || 0.6;
+      if (changes.screamDuration) listenMs = Number(changes.screamDuration.newValue) || 3500;
+      if (changes.roastEnabled) roastEnabled = changes.roastEnabled.newValue !== false;
+      updateOverlaySettingsUI();
     });
   } catch (_) {
     /* ignore */
@@ -257,8 +277,9 @@
   }
 
   function amplitudeToScore(rms, peakSample) {
-    const raw = Math.max(rms * 5.5, peakSample * 2.4);
-    let score = Math.min(100, Math.pow(Math.min(1, raw * 3.4), 0.55) * 100);
+    const sens = Math.max(0.1, Number(sensitivity) || 0.6);
+    const raw = Math.max(rms * 2.8, peakSample * 1.4) * sens;
+    let score = Math.min(100, Math.pow(Math.min(1, raw * 2.2), 0.65) * 100);
     if (score < 3) score = 0;
     return score;
   }
@@ -416,6 +437,28 @@
     setTimeout(close, 10000);
   }
 
+  function getSensitivityLabel(val) {
+    const num = Number(val);
+    if (num <= 0.35) return `${num.toFixed(2)}x (Hardcore Scream)`;
+    if (num <= 0.55) return `${num.toFixed(2)}x (Firm Scream)`;
+    if (num <= 0.8) return `${num.toFixed(2)}x (Balanced)`;
+    if (num <= 1.2) return `${num.toFixed(2)}x (Sensitive)`;
+    return `${num.toFixed(2)}x (Whisper Mode)`;
+  }
+
+  function updateOverlaySettingsUI() {
+    if (!overlay) return;
+    const sensInput = overlay.querySelector('.sv-ov-sensitivity');
+    const sensVal = overlay.querySelector('.sv-ov-sensitivity-val');
+    const durationInput = overlay.querySelector('.sv-ov-duration');
+    const roastInput = overlay.querySelector('.sv-ov-roast');
+
+    if (sensInput) sensInput.value = sensitivity;
+    if (sensVal) sensVal.textContent = getSensitivityLabel(sensitivity);
+    if (durationInput) durationInput.value = String(listenMs);
+    if (roastInput) roastInput.checked = roastEnabled;
+  }
+
   function ensureOverlay() {
     if (overlay && overlay.isConnected) return overlay;
     overlay = document.createElement('div');
@@ -449,11 +492,41 @@
           <div class="sv-level"><span class="sv-level-emoji">😐</span> <span class="sv-level-text">Calm</span></div>
           <p class="sv-status sv-scream-status">ANALYZING SCREAM SOUND...</p>
         </div>
+        <div class="sv-phase sv-phase-settings" hidden>
+          <div class="sv-kicker">SCREAM SLIDER SETTINGS</div>
+          <h2 class="sv-title">⚙️ ADJUST CONTROLS</h2>
+          <div class="sv-settings-box">
+            <div class="sv-setting-item">
+              <div class="sv-setting-header">
+                <span>🎚️ Mic Sensitivity</span>
+                <span class="sv-setting-val sv-ov-sensitivity-val">0.60x (Balanced)</span>
+              </div>
+              <p class="sv-setting-desc">Lower sensitivity requiring harder screams. Higher sensitivity for soft microphones.</p>
+              <input type="range" class="sv-ov-sensitivity" min="0.2" max="2.0" step="0.05" value="0.6" />
+            </div>
+            <div class="sv-setting-item">
+              <div class="sv-setting-header"><span>⏱️ Scream Duration</span></div>
+              <select class="sv-ov-duration">
+                <option value="2000">2.0s (Fast)</option>
+                <option value="3500">3.5s (Standard)</option>
+                <option value="5000">5.0s (Long)</option>
+              </select>
+            </div>
+            <div class="sv-setting-item sv-setting-row">
+              <span>😈 Pre-Scream Roast Briefing</span>
+              <input type="checkbox" class="sv-ov-roast" checked />
+            </div>
+          </div>
+        </div>
         <p class="sv-privacy">Audio stays on this device. Recordings are never stored.</p>
-        <button type="button" class="sv-cancel" data-sv-cancel>Cancel</button>
+        <div class="sv-card-actions">
+          <button type="button" class="sv-cancel" data-sv-cancel>Cancel</button>
+          <button type="button" class="sv-settings-btn" data-sv-toggle-settings>⚙️ Settings</button>
+        </div>
       </div>
     `;
     (document.documentElement || document.body).appendChild(overlay);
+
     overlay.querySelectorAll('[data-sv-cancel]').forEach((el) => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
@@ -461,13 +534,79 @@
         cancelScream();
       });
     });
+
+    const settingsBtn = overlay.querySelector('[data-sv-toggle-settings]');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleOverlaySettings();
+      });
+    }
+
+    const sensInput = overlay.querySelector('.sv-ov-sensitivity');
+    if (sensInput) {
+      sensInput.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        sensitivity = val;
+        overlay.querySelector('.sv-ov-sensitivity-val').textContent = getSensitivityLabel(val);
+        try {
+          chrome.storage.sync.set({ sensitivity: val });
+        } catch (_) {}
+      });
+    }
+
+    const durationInput = overlay.querySelector('.sv-ov-duration');
+    if (durationInput) {
+      durationInput.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value, 10);
+        listenMs = val;
+        try {
+          chrome.storage.sync.set({ screamDuration: val });
+        } catch (_) {}
+      });
+    }
+
+    const roastInput = overlay.querySelector('.sv-ov-roast');
+    if (roastInput) {
+      roastInput.addEventListener('change', (e) => {
+        const val = e.target.checked;
+        roastEnabled = val;
+        try {
+          chrome.storage.sync.set({ roastEnabled: val });
+        } catch (_) {}
+      });
+    }
+
+    updateOverlaySettingsUI();
     return overlay;
+  }
+
+  function toggleOverlaySettings() {
+    const root = ensureOverlay();
+    const settingsPhase = root.querySelector('.sv-phase-settings');
+    const isCurrentlySettings = !settingsPhase.hidden;
+    const btn = root.querySelector('[data-sv-toggle-settings]');
+
+    if (isCurrentlySettings) {
+      setPhase(activePhaseBeforeSettings || 'briefing');
+      if (btn) btn.textContent = '⚙️ Settings';
+    } else {
+      if (root.querySelector('.sv-phase-briefing').hidden === false) {
+        activePhaseBeforeSettings = 'briefing';
+      } else {
+        activePhaseBeforeSettings = 'scream';
+      }
+      setPhase('settings');
+      if (btn) btn.textContent = '◀ Back';
+    }
   }
 
   function setPhase(phase) {
     const root = ensureOverlay();
     root.querySelector('.sv-phase-briefing').hidden = phase !== 'briefing';
     root.querySelector('.sv-phase-scream').hidden = phase !== 'scream';
+    root.querySelector('.sv-phase-settings').hidden = phase !== 'settings';
   }
 
   /**
@@ -539,11 +678,18 @@
     pendingRequest = { current: from, requested: to, troll, deltaLine };
     busy = true;
 
-    // 1) Troll BEFORE scream authorization
-    showBriefing(pendingRequest);
+    if (roastEnabled) {
+      // 1) Troll BEFORE scream authorization
+      showBriefing(pendingRequest);
 
-    clearTimeout(briefingTimer);
-    briefingTimer = setTimeout(() => beginAuthorization(), BRIEFING_MS);
+      clearTimeout(briefingTimer);
+      briefingTimer = setTimeout(() => beginAuthorization(), BRIEFING_MS);
+    } else {
+      // Fast mode — go straight to scream phase
+      const root = ensureOverlay();
+      root.classList.add('sv-visible');
+      beginAuthorization();
+    }
   }
 
   async function beginAuthorization() {
@@ -571,7 +717,7 @@
     }
 
     clearTimeout(screamTimer);
-    screamTimer = setTimeout(finishScream, LISTEN_MS);
+    screamTimer = setTimeout(finishScream, listenMs);
   }
 
   async function finishScream() {
