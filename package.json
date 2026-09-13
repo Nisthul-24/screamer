@@ -1,0 +1,57 @@
+{
+  "name": "the-screaming-volume-slider",
+  "version": "1.0.0",
+  "description": "THE SCREAMING VOLUME SLIDER™ — We didn't solve a problem. We created one.",
+  "main": "electron/main.js",
+  "author": "Scream Authority",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build:dir": "electron-builder --win --dir",
+    "pack": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.screamauthority.volume",
+    "productName": "TheScreamingVolumeSlider",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "TheScreamingVolumeSlider.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "The Screaming Volume Slider"
+    },
+    "files": [
+      "electron/**/*",
+      "renderer/**/*",
+      "assets/**/*",
+      "package.json"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "loudness": "^0.4.2"
+  }
+}

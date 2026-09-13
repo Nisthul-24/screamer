@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; media-src 'self' blob:;" />
+  <title>THE SCREAMING VOLUME SLIDER™</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🔊</div>
+        <div>
+          <div class="brand-name">SCREAM VOL</div>
+          <div class="brand-sub">AUTH SYSTEM</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-page="home" type="button">HOME</button>
+        <button class="nav-btn" data-page="stats" type="button">SCREAM STATS</button>
+        <button class="nav-btn" data-page="achievements" type="button">ACHIEVEMENTS</button>
+        <button class="nav-btn" data-page="leaderboard" type="button">LEADERBOARD</button>
+        <button class="nav-btn" data-page="history" type="button">HISTORY</button>
+        <button class="nav-btn" data-page="settings" type="button">SETTINGS</button>
+        <button class="nav-btn" data-page="hackathon" type="button">HACKATHON</button>
+      </nav>
+      <div class="privacy-note">
+        Audio is analyzed locally.<br />Recordings are never stored.
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- HOME -->
+      <section id="page-home" class="page active" aria-label="Home">
+        <header class="hero-header">
+          <h1 class="product-title">THE SCREAMING VOLUME SLIDER™</h1>
+          <p class="tagline">“We didn’t solve a problem. We created one.”</p>
+          <div class="demo-pill" hidden id="demo-flag">DEMO MODE — real mic + real Windows volume still active</div>
+        </header>
+
+        <div class="home-grid">
+          <article class="panel volume-panel">
+            <h2 class="panel-label">CURRENT VOLUME</h2>
+            <div class="volume-icon" aria-hidden="true">🔊</div>
+            <div class="volume-readout">
+              <span id="current-volume-value">—%</span>
+            </div>
+            <label class="sr-only" for="volume-slider">Master volume request</label>
+            <input id="volume-slider" class="volume-slider" type="range" min="0" max="100" value="50" />
+            <div class="slider-meta">
+              <span id="slider-preview">50%</span>
+              <span id="lock-badge" class="lock-badge">🔒 UNAUTHORIZED</span>
+            </div>
+            <p class="hint">You can’t pick the volume. Your scream average becomes the volume.</p>
+            <p id="request-hint" class="request-hint"></p>
+          </article>
+
+          <article class="panel power-panel">
+            <h2 class="panel-label">SCREAM AVERAGE → VOLUME</h2>
+            <div class="mic-glow" aria-hidden="true">🎤</div>
+            <div id="home-scream-power" class="power-score">0 / 100</div>
+            <div class="meter"><div id="home-scream-bar" class="meter-fill"></div></div>
+            <div class="mini-stats">
+              <div>
+                <div class="mini-label">SCREAM COMBO</div>
+                <div id="combo-value" class="mini-value">🔥 × 0</div>
+              </div>
+              <div>
+                <div class="mini-label">BEST SCREAM</div>
+                <div id="best-scream-value" class="mini-value">0</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel status-panel">
+            <h2 class="panel-label">STATUS</h2>
+            <p id="status-text" class="status-text">Waiting for an unnecessary volume adjustment...</p>
+            <div id="cooldown-panel" class="cooldown-panel" hidden>
+              <div class="cooldown-title">🫁 VOCAL ENERGY DEPLETED</div>
+              <div id="cooldown-count" class="cooldown-count">5</div>
+              <div class="cooldown-bar"><div class="cooldown-fill"></div></div>
+              <p>Recharging vocal system...</p>
+            </div>
+            <div id="error-panel" class="error-panel" hidden>
+              <div class="error-title">🎤 SYSTEM FAULT</div>
+              <p id="error-text"></p>
+              <button id="btn-retry-error" class="btn primary" type="button">Retry</button>
+            </div>
+            <div class="coach-box">
+              <div class="coach-label">AI SCREAM COACH</div>
+              <p id="coach-line">Ready when you are. Unfortunately.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section id="page-stats" class="page" aria-label="Statistics">
+        <h2 class="page-title">SCREAM STATISTICS</h2>
+        <div id="stats-grid" class="stats-grid"></div>
+      </section>
+
+      <!-- ACHIEVEMENTS -->
+      <section id="page-achievements" class="page" aria-label="Achievements">
+        <h2 class="page-title">ACHIEVEMENTS</h2>
+        <p class="page-sub">Click an achievement for details. Locked ones show as 🔒 ????</p>
+        <div id="achievements-grid" class="achievements-grid"></div>
+      </section>
+
+      <!-- LEADERBOARD -->
+      <section id="page-leaderboard" class="page" aria-label="Leaderboard">
+        <h2 class="page-title">SCREAM LEADERBOARD</h2>
+        <p class="page-sub">It’s all you. That’s the joke.</p>
+        <div id="leaderboard-list" class="leaderboard-list"></div>
+        <p id="leaderboard-meta" class="page-sub"></p>
+      </section>
+
+      <!-- HISTORY -->
+      <section id="page-history" class="page" aria-label="History">
+        <h2 class="page-title">SCREAM HISTORY</h2>
+        <div id="history-list" class="history-list"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="page-settings" class="page" aria-label="Settings">
+        <h2 class="page-title">SETTINGS</h2>
+        <form id="settings-form" class="settings-form">
+          <label>Nickname
+            <input id="nickname-input" type="text" maxlength="24" />
+          </label>
+          <label>Microphone
+            <select id="setting-mic"></select>
+          </label>
+          <label>Microphone sensitivity
+            <input id="setting-sensitivity" type="range" min="0.5" max="2" step="0.1" value="1" />
+          </label>
+          <label>Cooldown duration (seconds)
+            <input id="setting-cooldown" type="number" min="1" max="30" value="5" />
+          </label>
+          <label class="check"><input id="setting-sfx" type="checkbox" checked /> Sound effects</label>
+          <label class="check"><input id="setting-funny" type="checkbox" checked /> Funny messages</label>
+          <label class="check"><input id="setting-anim" type="checkbox" checked /> Animations</label>
+          <label class="check"><input id="setting-demo" type="checkbox" /> Demo Mode (exaggerated UI; still real scream + volume)</label>
+          <div class="settings-actions">
+            <button class="btn primary" type="submit">Save settings</button>
+            <button id="btn-test-mic" class="btn" type="button">Test microphone</button>
+            <button id="btn-demo-seed" class="btn" type="button">Seed demo data</button>
+          </div>
+        </form>
+
+        <div id="mic-test-panel" class="mic-test-panel" hidden>
+          <h3>🎤 MICROPHONE TEST</h3>
+          <p>Speak or scream. Audio stays on this device.</p>
+          <div class="meter"><div id="mic-test-bar" class="meter-fill"></div></div>
+          <p>Current intensity: <strong id="mic-test-live">0</strong> · Scream Power: <strong id="mic-test-power">0</strong></p>
+          <p id="mic-test-status">Microphone working.</p>
+          <button id="btn-stop-mic-test" class="btn" type="button">Stop test</button>
+        </div>
+
+        <div class="danger-zone">
+          <h3>Reset</h3>
+          <button id="btn-reset-stats" class="btn danger" type="button">Reset statistics</button>
+          <button id="btn-reset-achievements" class="btn danger" type="button">Reset achievements</button>
+          <button id="btn-reset-leaderboard" class="btn danger" type="button">Reset leaderboard</button>
+        </div>
+      </section>
+
+      <!-- HACKATHON -->
+      <section id="page-hackathon" class="page" aria-label="Hackathon Mode">
+        <h2 class="page-title">HACKATHON MODE</h2>
+        <div class="pitch-grid">
+          <article class="panel">
+            <h3>PROBLEM</h3>
+            <p>Traditional volume controls require almost zero physical effort.</p>
+          </article>
+          <article class="panel">
+            <h3>SOLUTION</h3>
+            <p>Voice-activated physical effort authorization.</p>
+          </article>
+          <article class="panel">
+            <h3>INNOVATION</h3>
+            <p>Converts human suffering into audio amplification.</p>
+          </article>
+          <article class="panel">
+            <h3>IMPACT</h3>
+            <p>None.</p>
+          </article>
+        </div>
+        <article class="panel future-panel">
+          <h3>FUTURE SCOPE</h3>
+          <ul>
+            <li>AI-powered scream authentication</li>
+            <li>Blockchain-based scream certificates</li>
+            <li>Cloud scream storage</li>
+            <li>Multi-user scream battles</li>
+            <li>Scream-to-payments</li>
+            <li>Neural-network-powered screaming analysis</li>
+          </ul>
+        </article>
+        <p class="final-line">We didn’t solve a problem.<br /><strong>We created one.</strong></p>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scream overlay -->
+  <div id="scream-overlay" class="scream-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="scream-title">
+    <div class="scream-card">
+      <div id="extreme-banner" class="special-banner" hidden>
+        ☢️ EXTREME SCREAM AVERAGE — THIS WILL SET VOLUME NEAR MAXIMUM.
+      </div>
+      <div id="silence-banner" class="special-banner silence" hidden>
+        VERY QUIET AVERAGE — THIS WILL SET VOLUME NEAR SILENCE.
+      </div>
+      <p class="auth-kicker">YOUR SCREAM AVERAGE BECOMES THE VOLUME</p>
+      <h2 id="scream-title">🎤 SCREAM NOW!!!</h2>
+      <p id="scream-subtitle" class="scream-sub"></p>
+      <p id="scream-dir-title" class="dir-title"></p>
+
+      <div class="req-grid">
+        <div><span>CURRENT</span><strong id="req-from">0%</strong></div>
+        <div><span>RESULTING VOLUME</span><strong id="req-volume">0%</strong></div>
+        <div><span>SCREAM AVERAGE</span><strong id="req-required">0%</strong></div>
+        <div><span>SECURITY</span><strong id="req-security">LOW</strong></div>
+      </div>
+
+      <div class="live-block">
+        <div class="live-label">SCREAM POWER → VOLUME</div>
+        <div class="meter large">
+          <div id="scream-meter-fill" class="meter-fill scream"></div>
+          <div id="scream-meter-peak" class="meter-peak"></div>
+        </div>
+        <div class="live-scores">
+          <span>LIVE <strong id="scream-live-score">0 / 100</strong></span>
+          <span>PEAK <strong id="scream-peak-score">0 / 100</strong></span>
+          <span>AVG → VOL <strong id="scream-required">0%</strong></span>
+        </div>
+        <div id="intensity-label" class="intensity">😐 Calm</div>
+      </div>
+
+      <p class="analyzing">ANALYZING VOCAL INTENSITY...</p>
+      <button id="btn-cancel-scream" class="btn ghost" type="button">Cancel authorization (Esc)</button>
+    </div>
+  </div>
+
+  <!-- Onboarding -->
+  <div id="onboarding" class="onboarding" hidden>
+    <div class="onboard-card">
+      <div class="onboard-step active">
+        <h2>Welcome to The Screaming Volume Slider™</h2>
+        <p>The world’s most unnecessary volume control system.</p>
+      </div>
+      <div class="onboard-step">
+        <h2>Changing volume is easy.</h2>
+        <p>Drag a slider. Done. Boring.</p>
+      </div>
+      <div class="onboard-step">
+        <h2>We fixed that.</h2>
+        <p>The slider is a lie. Your scream average sets the volume.</p>
+      </div>
+      <div class="onboard-step">
+        <h2>Connect your microphone.</h2>
+        <p>Audio is analyzed locally. Recordings are never stored.</p>
+      </div>
+      <div class="onboard-step">
+        <h2>Now scream.</h2>
+        <p>Louder average = louder volume. Quieter average = quieter volume.</p>
+      </div>
+      <div class="onboard-actions">
+        <button id="btn-skip-onboard" class="btn ghost" type="button">Skip</button>
+        <button id="btn-onboard-next" class="btn primary" type="button">Next</button>
+        <button id="btn-start-screaming" class="btn primary" type="button" hidden>START SCREAMING</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
