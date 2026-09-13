@@ -18,26 +18,32 @@
   let lastApplied = -1;
 
   function markUserIntent() {
-    userIntentUntil = Date.now() + 4000;
+    userIntentUntil = Date.now() + 8000;
   }
 
   function looksLikeVolumeControl(el) {
-    if (!el || !el.closest) return false;
-    return !!el.closest(
+    if (!el) return false;
+    const target = el.closest ? el : el.parentElement;
+    if (!target || !target.closest) return false;
+    return !!target.closest(
       [
         '.ytp-volume-area',
         '.ytp-volume-panel',
         '.ytp-mute-button',
         '.ytp-volume-slider',
         '.ytp-volume-slider-handle',
+        '.ytp-volume-slider-active',
         '.ytp-volume-icon',
+        '.ytp-chrome-controls',
         '[class*="volume"]',
         '[class*="Volume"]',
         '[aria-label*="olume"]',
         '[aria-label*="Mute"]',
         '[aria-label*="Unmute"]',
         '[data-tooltip*="olume"]',
-        'input[type="range"]'
+        'input[type="range"]',
+        '#movie_player',
+        '.html5-video-player'
       ].join(',')
     );
   }
@@ -62,7 +68,14 @@
   document.addEventListener(
     'keydown',
     (e) => {
-      if (e.key === 'm' || e.key === 'M') markUserIntent();
+      if (
+        e.key === 'm' ||
+        e.key === 'M' ||
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowDown'
+      ) {
+        markUserIntent();
+      }
     },
     true
   );

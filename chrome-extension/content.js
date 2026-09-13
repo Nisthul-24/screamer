@@ -215,7 +215,11 @@
     if (score <= 40) return { emoji: '🙂', text: 'Mildly annoyed' };
     if (score <= 60) return { emoji: '😠', text: 'Getting angry' };
     if (score <= 80) return { emoji: '🔥', text: 'Very angry' };
-    if (score <= 95) return { emoji: '💀', text: 'Absolutely furi  let toastHost = null;
+    if (score <= 95) return { emoji: '💀', text: 'Absolutely furious' };
+    return { emoji: '☢️', text: 'UNNECESSARY ANGER' };
+  }
+
+  let toastHost = null;
   let overlay = null;
   let analyzer = null;
   let screamTimer = null;
