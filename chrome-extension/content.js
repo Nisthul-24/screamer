@@ -422,32 +422,32 @@
     overlay.id = 'scream-volume-root';
     overlay.innerHTML = `
       <div class="sv-backdrop" data-sv-cancel></div>
-      <div class="sv-card" role="dialog" aria-modal="true" aria-label="Scream to authorize volume">
+      <div class="sv-card" role="dialog" aria-modal="true" aria-label="Scream to set volume">
         <div class="sv-phase sv-phase-briefing">
-          <div class="sv-kicker sv-request-line">🚨 VOLUME REQUEST: —%</div>
+          <div class="sv-kicker sv-request-line">🚨 VOLUME CHANGE REQUESTED: —%</div>
           <h2 class="sv-title sv-brief-emoji">😈</h2>
           <p class="sv-quote sv-brief-troll">Loading unnecessary judgment...</p>
           <p class="sv-delta-line"></p>
           <div class="sv-req-box">
-            <div>Required Scream Power</div>
-            <strong class="sv-required">—</strong>
+            <div>SCREAM MODE RULE</div>
+            <strong style="font-size: 1rem; color: #ffd7c8; margin-top: 0.25rem;">YOUR SCREAM SOUND = VIDEO VOLUME</strong>
           </div>
-          <p class="sv-authorize-line">🎤 SCREAM TO AUTHORIZE</p>
-          <p class="sv-status sv-brief-status">Preparing vocal authentication...</p>
+          <p class="sv-authorize-line">🎤 GET READY TO SCREAM</p>
+          <p class="sv-status sv-brief-status">Preparing microphone...</p>
         </div>
         <div class="sv-phase sv-phase-scream" hidden>
-          <div class="sv-kicker">BIOMETRIC VOCAL AUTHENTICATION</div>
+          <div class="sv-kicker">VOCAL VOLUME CONTROL</div>
           <h2 class="sv-title">🎤 SCREAM NOW!!!</h2>
-          <p class="sv-sub sv-scream-sub">Hit the required scream power to unlock the volume.</p>
+          <p class="sv-sub sv-scream-sub">High scream = High volume. Soft scream = Low volume.</p>
           <div class="sv-grid">
-            <div><span>FROM</span><strong class="sv-from">—</strong></div>
-            <div><span>REQUESTED</span><strong class="sv-to">—</strong></div>
-            <div><span>LIVE</span><strong class="sv-live">0</strong></div>
-            <div><span>NEED</span><strong class="sv-need">—</strong></div>
+            <div><span>PREVIOUS</span><strong class="sv-from">—</strong></div>
+            <div><span>ATTEMPTED</span><strong class="sv-to">—</strong></div>
+            <div><span>LIVE INTENSITY</span><strong class="sv-live">0%</strong></div>
+            <div><span>CALCULATED VOL</span><strong class="sv-score">0%</strong></div>
           </div>
           <div class="sv-meter"><div class="sv-meter-fill"></div></div>
           <div class="sv-level"><span class="sv-level-emoji">😐</span> <span class="sv-level-text">Calm</span></div>
-          <p class="sv-status sv-scream-status">ANALYZING VOCAL INTENSITY...</p>
+          <p class="sv-status sv-scream-status">ANALYZING SCREAM SOUND...</p>
         </div>
         <p class="sv-privacy">Audio stays on this device. Recordings are never stored.</p>
         <button type="button" class="sv-cancel" data-sv-cancel>Cancel</button>
@@ -473,16 +473,15 @@
   /**
    * Show volume-based troll BEFORE mic / scream starts.
    */
-  function showBriefing({ current, requested, required, troll, deltaLine }) {
+  function showBriefing({ current, requested, troll, deltaLine }) {
     const root = ensureOverlay();
     root.classList.add('sv-visible');
     setPhase('briefing');
-    root.querySelector('.sv-request-line').textContent = `🚨 VOLUME REQUEST: ${requested}%`;
+    root.querySelector('.sv-request-line').textContent = `🚨 VOLUME CHANGE REQUESTED: ${requested}%`;
     root.querySelector('.sv-brief-emoji').textContent = troll.emoji;
     root.querySelector('.sv-brief-troll').textContent = `"${troll.message}"`;
     root.querySelector('.sv-delta-line').textContent = deltaLine ? `Δ ${current}% → ${requested}% — ${deltaLine}` : `${current}% → ${requested}%`;
-    root.querySelector('.sv-required').textContent = `${required} / 100`;
-    root.querySelector('.sv-brief-status').textContent = 'Trolling complete. Authorization incoming...';
+    root.querySelector('.sv-brief-status').textContent = 'Roast delivered. Get ready to scream for real volume...';
   }
 
   function showScreamPhase(req) {
@@ -490,11 +489,11 @@
     setPhase('scream');
     root.querySelector('.sv-from').textContent = `${req.current}%`;
     root.querySelector('.sv-to').textContent = `${req.requested}%`;
-    root.querySelector('.sv-need').textContent = `${req.required}`;
-    root.querySelector('.sv-live').textContent = '0';
+    root.querySelector('.sv-live').textContent = '0%';
+    root.querySelector('.sv-score').textContent = '0%';
     root.querySelector('.sv-meter-fill').style.width = '0%';
-    root.querySelector('.sv-scream-sub').textContent = `"${req.troll.message}" — need ${req.required}/100`;
-    root.querySelector('.sv-scream-status').textContent = '🎤 SCREAM TO AUTHORIZE';
+    root.querySelector('.sv-scream-sub').textContent = 'Scream intensity determines video volume! High scream = loud, soft = quiet.';
+    root.querySelector('.sv-scream-status').textContent = '🎤 SCREAM NOW!';
     root.querySelector('.sv-level-emoji').textContent = '😐';
     root.querySelector('.sv-level-text').textContent = 'Calm';
   }
@@ -505,17 +504,23 @@
 
   function updateOverlay({ live, peak, average }) {
     if (!overlay || !pendingRequest) return;
-    const score = Math.max(live, average, peak);
+    const score = Math.min(100, Math.max(0, Math.round(Math.max(live, average, peak))));
     const label = intensityLabel(score);
-    const need = pendingRequest.required;
-    overlay.querySelector('.sv-live').textContent = String(score);
-    overlay.querySelector('.sv-meter-fill').style.width = `${Math.min(100, score)}%`;
+    overlay.querySelector('.sv-live').textContent = `${score}%`;
+    overlay.querySelector('.sv-score').textContent = `${score}%`;
+    overlay.querySelector('.sv-meter-fill').style.width = `${score}%`;
     overlay.querySelector('.sv-level-emoji').textContent = label.emoji;
     overlay.querySelector('.sv-level-text').textContent = label.text;
-    overlay.querySelector('.sv-scream-status').textContent =
-      score >= need
-        ? `🔥 ${score}/${need} — KEEP GOING`
-        : `Need ${need} · now ${score} — LOUDER`;
+    
+    if (score < 10) {
+      overlay.querySelector('.sv-scream-status').textContent = `🤫 Too quiet → Volume will be ~${score}%`;
+    } else if (score < 40) {
+      overlay.querySelector('.sv-scream-status').textContent = `🔉 Soft scream → Volume will be ~${score}%`;
+    } else if (score < 75) {
+      overlay.querySelector('.sv-scream-status').textContent = `🔊 Medium scream → Volume will be ~${score}%`;
+    } else {
+      overlay.querySelector('.sv-scream-status').textContent = `🔥 HIGH SCREAM → Volume will be ~${score}%!`;
+    }
   }
 
   async function startScreamFlow({ current, requested }) {
@@ -527,14 +532,11 @@
 
     const from = Math.round(current);
     const to = Math.round(requested);
-    let required = requiredScreamForDelta(to - from);
-    if (to === 100) required = 100;
-    if (to === 0) required = Math.max(required, 40);
 
     const troll = volumeRangeInfo(to);
     const deltaLine = deltaTroll(from, to);
 
-    pendingRequest = { current: from, requested: to, required, troll, deltaLine };
+    pendingRequest = { current: from, requested: to, troll, deltaLine };
     busy = true;
 
     // 1) Troll BEFORE scream authorization
@@ -583,15 +585,13 @@
 
     const peak = result.peak;
     const average = result.average;
-    const score = Math.max(peak, average);
-    const { current, requested, required } = pendingRequest;
+    const score = Math.min(100, Math.max(0, Math.round(Math.max(peak, average))));
     const whisper = peak < WHISPER_CEILING && average < WHISPER_CEILING;
-    const success = !whisper && score >= required;
 
-    if (!success) {
+    if (whisper || score < 8) {
       if (overlay) {
-        overlay.querySelector('.sv-title').textContent = '💀 DENIED';
-        overlay.querySelector('.sv-scream-status').textContent = pickAvoidRepeat('fail', FAIL_MESSAGES);
+        overlay.querySelector('.sv-title').textContent = '🤫 TOO QUIET';
+        overlay.querySelector('.sv-scream-status').textContent = 'Not enough scream! Volume unchanged. Scream louder!';
       }
       postToPage('CANCEL_VOLUME');
       setTimeout(() => {
@@ -599,8 +599,8 @@
         busy = false;
         showNotification({
           icon: '🤫',
-          title: '🔓 AUTHORIZATION FAILED',
-          body: pickAvoidRepeat('fail-notif', FAIL_MESSAGES),
+          title: 'TOO QUIET',
+          body: 'Not enough scream sound detected! Volume unchanged.',
           success: false
         });
         pendingRequest = null;
@@ -608,24 +608,26 @@
       return;
     }
 
+    const finalVolume = score;
+
     if (overlay) {
-      overlay.querySelector('.sv-title').textContent = '🔓 AUTHORIZED';
-      overlay.querySelector('.sv-scream-status').textContent = `${current}% → ${requested}%`;
+      overlay.querySelector('.sv-title').textContent = `🔊 VOLUME SET TO ${finalVolume}%`;
+      overlay.querySelector('.sv-scream-status').textContent = `Scream intensity (${finalVolume}%) applied to video!`;
     }
 
-    postToPage('APPLY_VOLUME', { volume: requested });
-    setTimeout(() => postToPage('APPLY_VOLUME', { volume: requested }), 120);
-    setTimeout(() => postToPage('APPLY_VOLUME', { volume: requested }), 400);
-    setTimeout(() => postToPage('APPLY_VOLUME', { volume: requested }), 900);
+    postToPage('APPLY_VOLUME', { volume: finalVolume });
+    setTimeout(() => postToPage('APPLY_VOLUME', { volume: finalVolume }), 120);
+    setTimeout(() => postToPage('APPLY_VOLUME', { volume: finalVolume }), 400);
+    setTimeout(() => postToPage('APPLY_VOLUME', { volume: finalVolume }), 900);
 
-    const successLine = pickAvoidRepeat('success', SUCCESS_MESSAGES);
+    const troll = volumeRangeInfo(finalVolume);
     setTimeout(() => {
       hideOverlay();
       busy = false;
       showNotification({
-        icon: '🔓',
-        title: `AUTHORIZED · ${current}% → ${requested}%`,
-        body: `"${successLine}"`,
+        icon: troll.emoji,
+        title: `🔊 VOLUME SET TO ${finalVolume}%`,
+        body: `"${troll.message}"`,
         success: true
       });
       pendingRequest = null;
