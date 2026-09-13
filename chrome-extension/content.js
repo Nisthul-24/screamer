@@ -92,6 +92,9 @@
   let lastQuoteBand = '';
   let lastQuoteAt = 0;
   let currentQuote = '';
+  let lastPopupBand = '';
+  let lastPopupAt = 0;
+  let toastHost = null;
 
   function trollQuoteFor(score, force) {
     const band = screamBand(score);
@@ -103,6 +106,67 @@
     lastQuoteAt = now;
     currentQuote = pick(TROLL_QUOTES[band] || TROLL_QUOTES.calm);
     return currentQuote;
+  }
+
+  function ensureToastHost() {
+    if (toastHost && toastHost.isConnected) return toastHost;
+    toastHost = document.createElement('div');
+    toastHost.id = 'scream-troll-toasts';
+    toastHost.setAttribute('aria-live', 'polite');
+    (document.documentElement || document.body).appendChild(toastHost);
+    return toastHost;
+  }
+
+  /**
+   * Pop a floating troll toast on the page based on scream level.
+   */
+  function popTroll(score, { force = false, final = false } = {}) {
+    const band = screamBand(score);
+    const now = Date.now();
+    // Pop when band changes, or every ~1.1s while screaming, or forced/final
+    if (!force && !final && band === lastPopupBand && now - lastPopupAt < 1100) {
+      return;
+    }
+    lastPopupBand = band;
+    lastPopupAt = now;
+
+    const label = intensityLabel(score);
+    const quote = pick(TROLL_QUOTES[band] || TROLL_QUOTES.calm);
+    const host = ensureToastHost();
+
+    const toast = document.createElement('div');
+    toast.className = `sv-troll-toast sv-band-${band}${final ? ' sv-final' : ''}`;
+    toast.innerHTML = `
+      <div class="sv-troll-emoji">${label.emoji}</div>
+      <div class="sv-troll-body">
+        <div class="sv-troll-level">${label.text} · ${Math.round(score)}/100</div>
+        <div class="sv-troll-text"></div>
+      </div>
+    `;
+    toast.querySelector('.sv-troll-text').textContent = quote;
+
+    // Stack toasts vertically
+    const stackIndex = host.children.length;
+    const side = Math.random() > 0.5 ? 'right' : 'left';
+    toast.classList.add(side === 'right' ? 'sv-from-right' : 'sv-from-left');
+    toast.style.setProperty('--sv-offset', `${16 + stackIndex * 88}px`);
+
+    host.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('sv-show'));
+
+    // Keep only last 4 toasts
+    while (host.children.length > 4) {
+      host.removeChild(host.firstChild);
+    }
+
+    const life = final ? 3200 : band === 'max' || band === 'furious' ? 2800 : 2200;
+    setTimeout(() => {
+      toast.classList.remove('sv-show');
+      toast.classList.add('sv-hide');
+      setTimeout(() => toast.remove(), 350);
+    }, life);
+
+    return quote;
   }
 
   let overlay = null;
@@ -317,11 +381,14 @@
     root.querySelector('.sv-title').textContent = '🎤 SCREAM NOW!!!';
     lastQuoteBand = '';
     lastQuoteAt = 0;
+    lastPopupBand = '';
+    lastPopupAt = 0;
     lastAverage = 0;
     const label = intensityLabel(0);
     root.querySelector('.sv-level-emoji').textContent = label.emoji;
     root.querySelector('.sv-level-text').textContent = label.text;
     root.querySelector('.sv-quote').textContent = trollQuoteFor(0, true);
+    popTroll(0, { force: true });
   }
 
   function hideOverlay() {
@@ -331,19 +398,25 @@
   function updateOverlay({ live, peak, average }) {
     if (!overlay) return;
     lastAverage = average;
-    const score = average > 0 ? average : live;
+    const score = Math.max(live, average);
     const label = intensityLabel(score);
+    const quote = trollQuoteFor(score, false);
     overlay.querySelector('.sv-live').textContent = String(live);
     overlay.querySelector('.sv-peak').textContent = String(peak);
     overlay.querySelector('.sv-avg').textContent = `${average}%`;
     overlay.querySelector('.sv-meter-fill').style.width = `${Math.max(live, average)}%`;
     overlay.querySelector('.sv-level-emoji').textContent = label.emoji;
     overlay.querySelector('.sv-level-text').textContent = label.text;
-    overlay.querySelector('.sv-quote').textContent = trollQuoteFor(score, false);
+    overlay.querySelector('.sv-quote').textContent = quote;
     overlay.querySelector('.sv-status').textContent =
       average > 0
         ? `Scream avg ${average}% → this will be the volume`
         : `Live ${live}/100 — keep screaming…`;
+
+    // Floating Chrome popups based on scream level
+    if (live >= 5 || average >= 5) {
+      popTroll(score, { force: false });
+    }
   }
 
   async function startScreamFlow({ current }) {
@@ -405,6 +478,7 @@
         overlay.querySelector('.sv-status').textContent =
           'Not enough scream. Volume unchanged. Louder + longer.';
       }
+      popTroll(Math.max(volumeLevel, 2), { force: true, final: true });
       postToPage('CANCEL_VOLUME');
       setTimeout(() => {
         hideOverlay();
@@ -422,6 +496,14 @@
       overlay.querySelector('.sv-level-text').textContent = label.text;
       overlay.querySelector('.sv-quote').textContent = trollQuoteFor(volumeLevel, true);
       overlay.querySelector('.sv-status').textContent = `Volume set to ${volumeLevel}% from your scream.`;
+    }
+    popTroll(volumeLevel, { force: true, final: true });
+    // Extra celebration popups for big screams
+    if (volumeLevel >= 70) {
+      setTimeout(() => popTroll(volumeLevel, { force: true, final: true }), 400);
+    }
+    if (volumeLevel >= 90) {
+      setTimeout(() => popTroll(100, { force: true, final: true }), 800);
     }
 
     // Apply and re-apply so YouTube can't instantly overwrite
