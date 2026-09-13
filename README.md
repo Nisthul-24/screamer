@@ -109,6 +109,20 @@ renderer/     # desktop UI
 
 ### Project Demo
 
+#### Screenshots
+
+![Electron Master Volume Interface](images/electron-app.png)
+*Desktop App — Master Volume Control Interface*
+
+![Chrome Extension Installed](images/chrome-extension-installed.png)
+*Chrome Extension v1.6.1 Loaded in Developer Mode*
+
+![YouTube Vocal Volume Control Scream Overlay](images/scream-overlay.png)
+*Live Scream Analysis Overlay on YouTube*
+
+![Volume Applied Notification Toast](images/volume-applied-toast.png)
+*Volume Applied Toast Notification after Scream Verification*
+
 # Video
 
 _Add your demo video link here_
