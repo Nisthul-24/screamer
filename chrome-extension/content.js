@@ -92,8 +92,6 @@
   let lastQuoteBand = '';
   let lastQuoteAt = 0;
   let currentQuote = '';
-  let lastPopupBand = '';
-  let lastPopupAt = 0;
   let toastHost = null;
 
   function trollQuoteFor(score, force) {
@@ -118,55 +116,77 @@
   }
 
   /**
-   * Pop a floating troll toast on the page based on scream level.
+   * Notification-style troll popup — shown AFTER screaming ends.
    */
-  function popTroll(score, { force = false, final = false } = {}) {
+  function showTrollNotification(score, { success = true, title = null } = {}) {
     const band = screamBand(score);
-    const now = Date.now();
-    // Pop when band changes, or every ~1.1s while screaming, or forced/final
-    if (!force && !final && band === lastPopupBand && now - lastPopupAt < 1100) {
-      return;
-    }
-    lastPopupBand = band;
-    lastPopupAt = now;
-
     const label = intensityLabel(score);
     const quote = pick(TROLL_QUOTES[band] || TROLL_QUOTES.calm);
     const host = ensureToastHost();
 
     const toast = document.createElement('div');
-    toast.className = `sv-troll-toast sv-band-${band}${final ? ' sv-final' : ''}`;
+    toast.className = `sv-troll-toast sv-band-${band} ${success ? 'sv-success' : 'sv-fail'}`;
     toast.innerHTML = `
-      <div class="sv-troll-emoji">${label.emoji}</div>
+      <div class="sv-notif-icon">${success ? '🔊' : '🤫'}</div>
       <div class="sv-troll-body">
-        <div class="sv-troll-level">${label.text} · ${Math.round(score)}/100</div>
+        <div class="sv-notif-app">THE SCREAMING VOLUME SLIDER™</div>
+        <div class="sv-troll-level"></div>
         <div class="sv-troll-text"></div>
       </div>
+      <button type="button" class="sv-notif-close" aria-label="Dismiss">×</button>
     `;
+    toast.querySelector('.sv-troll-level').textContent =
+      title ||
+      (success
+        ? `${label.emoji} ${label.text} · Volume ${Math.round(score)}%`
+        : `${label.emoji} Scream rejected`);
     toast.querySelector('.sv-troll-text').textContent = quote;
 
-    // Stack toasts vertically
-    const stackIndex = host.children.length;
-    const side = Math.random() > 0.5 ? 'right' : 'left';
-    toast.classList.add(side === 'right' ? 'sv-from-right' : 'sv-from-left');
-    toast.style.setProperty('--sv-offset', `${16 + stackIndex * 88}px`);
-
-    host.appendChild(toast);
-    requestAnimationFrame(() => toast.classList.add('sv-show'));
-
-    // Keep only last 4 toasts
-    while (host.children.length > 4) {
-      host.removeChild(host.firstChild);
-    }
-
-    const life = final ? 3200 : band === 'max' || band === 'furious' ? 2800 : 2200;
-    setTimeout(() => {
+    const close = () => {
       toast.classList.remove('sv-show');
       toast.classList.add('sv-hide');
-      setTimeout(() => toast.remove(), 350);
-    }, life);
+      setTimeout(() => toast.remove(), 320);
+    };
+    toast.querySelector('.sv-notif-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      close();
+    });
 
+    host.appendChild(toast);
+    // Stack from bottom
+    const kids = [...host.querySelectorAll('.sv-troll-toast')];
+    kids.forEach((el, i) => {
+      const fromBottom = (kids.length - 1 - i) * 100;
+      el.style.setProperty('--sv-stack', `${16 + fromBottom}px`);
+    });
+
+    requestAnimationFrame(() => toast.classList.add('sv-show'));
+
+    while (host.children.length > 3) {
+      host.firstChild.remove();
+    }
+
+    setTimeout(close, success ? 4500 : 3800);
     return quote;
+  }
+
+  /** After scream ends: close overlay, then pop notification(s). */
+  function notifyAfterScream(score, { success }) {
+    hideOverlay();
+    busy = false;
+    // Small delay so it feels like a real Chrome notification after the modal closes
+    setTimeout(() => {
+      showTrollNotification(score, { success });
+      if (success && score >= 70) {
+        setTimeout(() => showTrollNotification(score, { success: true, title: '🔥 Unnecessary power achieved' }), 500);
+      }
+      if (success && score >= 90) {
+        setTimeout(
+          () => showTrollNotification(100, { success: true, title: '☢️ Neighbor complaint incoming' }),
+          1000
+        );
+      }
+    }, 280);
   }
 
   let overlay = null;
@@ -381,14 +401,11 @@
     root.querySelector('.sv-title').textContent = '🎤 SCREAM NOW!!!';
     lastQuoteBand = '';
     lastQuoteAt = 0;
-    lastPopupBand = '';
-    lastPopupAt = 0;
     lastAverage = 0;
     const label = intensityLabel(0);
     root.querySelector('.sv-level-emoji').textContent = label.emoji;
     root.querySelector('.sv-level-text').textContent = label.text;
     root.querySelector('.sv-quote').textContent = trollQuoteFor(0, true);
-    popTroll(0, { force: true });
   }
 
   function hideOverlay() {
@@ -412,11 +429,6 @@
       average > 0
         ? `Scream avg ${average}% → this will be the volume`
         : `Live ${live}/100 — keep screaming…`;
-
-    // Floating Chrome popups based on scream level
-    if (live >= 5 || average >= 5) {
-      popTroll(score, { force: false });
-    }
   }
 
   async function startScreamFlow({ current }) {
@@ -478,12 +490,10 @@
         overlay.querySelector('.sv-status').textContent =
           'Not enough scream. Volume unchanged. Louder + longer.';
       }
-      popTroll(Math.max(volumeLevel, 2), { force: true, final: true });
       postToPage('CANCEL_VOLUME');
       setTimeout(() => {
-        hideOverlay();
-        busy = false;
-      }, 1800);
+        notifyAfterScream(Math.max(volumeLevel, 2), { success: false });
+      }, 900);
       return;
     }
 
@@ -497,14 +507,6 @@
       overlay.querySelector('.sv-quote').textContent = trollQuoteFor(volumeLevel, true);
       overlay.querySelector('.sv-status').textContent = `Volume set to ${volumeLevel}% from your scream.`;
     }
-    popTroll(volumeLevel, { force: true, final: true });
-    // Extra celebration popups for big screams
-    if (volumeLevel >= 70) {
-      setTimeout(() => popTroll(volumeLevel, { force: true, final: true }), 400);
-    }
-    if (volumeLevel >= 90) {
-      setTimeout(() => popTroll(100, { force: true, final: true }), 800);
-    }
 
     // Apply and re-apply so YouTube can't instantly overwrite
     postToPage('APPLY_VOLUME', { volume: volumeLevel });
@@ -513,9 +515,8 @@
     setTimeout(() => postToPage('APPLY_VOLUME', { volume: volumeLevel }), 900);
 
     setTimeout(() => {
-      hideOverlay();
-      busy = false;
-    }, 1400);
+      notifyAfterScream(volumeLevel, { success: true });
+    }, 900);
   }
 
   async function cancelScream() {
