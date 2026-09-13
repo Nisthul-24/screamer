@@ -47,6 +47,9 @@ class ScreamApp {
     this.pendingSliderValue = null;
     this.ignoreAttempts = 0;
     this.micSessionActive = false;
+    this._coachBand = '';
+    this._coachAt = 0;
+    this._coachLine = '';
 
     this.$ = (sel) => document.querySelector(sel);
     this.$$ = (sel) => [...document.querySelectorAll(sel)];
@@ -267,7 +270,15 @@ class ScreamApp {
     this.$('#scream-peak-score').textContent = `${peak} / 100`;
     this.$('#scream-required').textContent = `${average}%`;
     this.$('#intensity-label').textContent = `${intensity.emoji} ${intensity.text}`;
-    this.$('#coach-line').textContent = coachMessage(average);
+    const score = Math.max(live, average);
+    const band = score <= 3 ? 's' : score <= 20 ? 'c' : score <= 40 ? 'm' : score <= 60 ? 'a' : score <= 80 ? 'v' : score <= 95 ? 'f' : 'x';
+    const now = performance.now();
+    if (band !== this._coachBand || now - this._coachAt > 900) {
+      this._coachBand = band;
+      this._coachAt = now;
+      this._coachLine = coachMessage(score);
+    }
+    this.$('#coach-line').textContent = this._coachLine;
     this.$('#home-scream-power').textContent = `${average} / 100`;
     this.$('#home-scream-bar').style.width = `${average}%`;
 

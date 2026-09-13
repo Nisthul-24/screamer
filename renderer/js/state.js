@@ -53,41 +53,62 @@ export function intensityLabel(score) {
 }
 
 /**
- * AI Scream Coach lines (fake AI, real vibes).
+ * AI Scream Coach lines (fake AI, real vibes) — troll quotes by scream level.
  */
 export function coachMessage(score) {
-  if (score >= 100) {
+  if (score >= 96) {
     return pick([
-      "I'M CALLING SOMEONE.",
-      'Humanity has peaked. Please stop.',
+      "☢️ I’M CALLING SOMEONE.",
+      'Humanity has peaked. Please hydrate.',
+      'Your scream broke the fourth wall.',
       'MAXIMUM UNNECESSARY ENERGY DETECTED.'
     ]);
   }
-  if (score >= 90) {
+  if (score >= 81) {
     return pick([
-      'PLEASE STOP.',
-      'That was… a lot.',
-      'Your neighbors have filed a ticket.'
+      '💀 Absolutely unhinged. Respect.',
+      'The neighbors have formed a committee.',
+      'Who hurt you? (besides this app)',
+      'PLEASE STOP. (jk keep going)'
     ]);
   }
-  if (score >= 70) {
+  if (score >= 61) {
     return pick([
-      "YES! THAT'S THE ENERGY.",
-      'Vocal authority confirmed.',
-      'Now THAT is a scream.'
+      "🔥 THERE it is. Chaotic good energy.",
+      'Your throat just filed a complaint.',
+      'YouTube would fear you. The PC already does.',
+      'Unnecessary? Yes. Effective? Also yes.'
     ]);
   }
-  if (score >= 40) {
+  if (score >= 41) {
     return pick([
-      'Better. But you can do more.',
-      'Warming up? Keep going.',
-      'Almost angry enough.'
+      '😠 Okay, now you’re mildly unhinged.',
+      'Neighbors: “is everything okay?”',
+      'Getting spicy. Keep going.',
+      'Almost angry enough for premium volume.'
+    ]);
+  }
+  if (score >= 21) {
+    return pick([
+      '🙂 Mildly annoyed. The computer yawned.',
+      'That barely scared a mosquito.',
+      'Warm-up scream. Where’s the main event?',
+      'You’re negotiating with the volume. Stop.'
+    ]);
+  }
+  if (score > 3) {
+    return pick([
+      '😐 That was a polite sigh, not a scream.',
+      'Library energy detected. Wrong app.',
+      'Try using lungs. Optional but recommended.',
+      'Come on. I believe in you. Barely.'
     ]);
   }
   return pick([
-    'Come on. I believe in you.',
-    'That was more of a polite cough.',
-    'Your lungs called. They want overtime.'
+    'Hello? Is this thing on?',
+    'Even your keyboard clicks are louder.',
+    'Silence is not a volume strategy.',
+    'Waiting for your unnecessary vocal performance...'
   ]);
 }
 
