@@ -1,0 +1,127 @@
+#scream-volume-root {
+  all: initial;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483646 !important;
+  display: none;
+  font-family: "Segoe UI", system-ui, sans-serif !important;
+}
+
+#scream-volume-root.sv-visible {
+  display: grid !important;
+  place-items: center !important;
+}
+
+#scream-volume-root .sv-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 12, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+#scream-volume-root .sv-card {
+  position: relative;
+  width: min(520px, 92vw);
+  padding: 1.35rem 1.4rem 1.2rem;
+  border-radius: 18px;
+  color: #e8f4ff;
+  background: linear-gradient(160deg, rgba(22, 12, 16, 0.96), rgba(10, 18, 32, 0.97));
+  border: 1px solid rgba(255, 90, 61, 0.45);
+  box-shadow: 0 0 50px rgba(255, 45, 85, 0.28);
+  text-align: center;
+}
+
+#scream-volume-root .sv-kicker {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #ff5a3d;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+#scream-volume-root .sv-title {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+#scream-volume-root .sv-sub {
+  margin: 0.45rem 0 0.9rem;
+  color: #8aa3bd;
+  font-size: 0.95rem;
+}
+
+#scream-volume-root .sv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+#scream-volume-root .sv-grid div {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.55rem 0.35rem;
+}
+
+#scream-volume-root .sv-grid span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #8aa3bd;
+  font-weight: 700;
+}
+
+#scream-volume-root .sv-grid strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.05rem;
+}
+
+#scream-volume-root .sv-meter {
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#scream-volume-root .sv-meter-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2ee6d6, #ffc857, #ff5a3d);
+  transition: width 0.08s linear;
+}
+
+#scream-volume-root .sv-status {
+  margin: 0.85rem 0 0.35rem;
+  color: #ffc857;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+#scream-volume-root .sv-privacy {
+  margin: 0 0 0.85rem;
+  color: #6d8299;
+  font-size: 0.75rem;
+}
+
+#scream-volume-root .sv-cancel {
+  appearance: none;
+  border: 1px solid rgba(138, 163, 189, 0.35);
+  background: transparent;
+  color: #e8f4ff;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+}
+
+#scream-volume-root .sv-cancel:hover {
+  border-color: #2ee6d6;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Screaming Volume Slider</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --text: #e8f4ff;
+      --muted: #8aa3bd;
+      --accent: #2ee6d6;
+      --hot: #ff5a3d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 320px;
+      padding: 1rem 1.05rem 1.1rem;
+      background: linear-gradient(165deg, #0a1220, #070b14 60%);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+    h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+    }
+    .tag {
+      margin: 0.4rem 0 0.9rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+    label.row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.7rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(46, 230, 214, 0.25);
+      background: rgba(46, 230, 214, 0.06);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--hot);
+    }
+    ol {
+      margin: 0.9rem 0 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .privacy {
+      margin-top: 0.85rem;
+      font-size: 0.72rem;
+      color: #6d8299;
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <h1>THE SCREAMING VOLUME SLIDER™</h1>
+  <p class="tag">On YouTube (and other sites), changing volume requires a scream. Your scream <strong>average</strong> becomes the video volume.</p>
+
+  <label class="row">
+    <span>Extension active</span>
+    <input id="enabled" type="checkbox" checked />
+  </label>
+
+  <ol>
+    <li>Open YouTube (or any video site).</li>
+    <li>Try to change the volume.</li>
+    <li>Scream when the overlay appears.</li>
+    <li>Volume = your scream average.</li>
+  </ol>
+
+  <p class="privacy">Mic is used only during scream mode. Audio is analyzed locally — recordings are never stored.</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>
