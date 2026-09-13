@@ -146,6 +146,58 @@
   border-color: #2ee6d6;
 }
 
+#scream-volume-root .sv-phase[hidden] {
+  display: none !important;
+}
+
+#scream-volume-root .sv-delta-line {
+  margin: 0.35rem 0 0.9rem;
+  color: #ffb089;
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+#scream-volume-root .sv-req-box {
+  margin: 0.75rem auto;
+  padding: 0.75rem 1rem;
+  max-width: 280px;
+  border-radius: 12px;
+  background: rgba(255, 200, 87, 0.1);
+  border: 1px solid rgba(255, 200, 87, 0.35);
+  color: #ffc857;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+#scream-volume-root .sv-req-box strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+
+#scream-volume-root .sv-authorize-line {
+  margin: 0.85rem 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #2ee6d6;
+}
+
+#scream-volume-root .sv-brief-troll {
+  font-size: 1.15rem;
+  min-height: 2.8em;
+}
+
+#scream-volume-root .sv-brief-emoji {
+  font-size: 2.4rem;
+  margin: 0.2rem 0;
+}
+
 /* Notification-style trolls (after scream) */
 #scream-troll-toasts {
   all: initial;
@@ -159,18 +211,18 @@
 .sv-troll-toast {
   pointer-events: auto !important;
   position: absolute;
-  right: 20px;
-  bottom: var(--sv-stack, 20px);
-  width: min(360px, calc(100vw - 32px));
+  right: 24px;
+  bottom: var(--sv-stack, 24px);
+  width: min(440px, calc(100vw - 32px));
   display: flex;
-  gap: 0.75rem;
+  gap: 0.9rem;
   align-items: flex-start;
-  padding: 0.9rem 0.85rem 0.9rem 0.95rem;
-  border-radius: 12px;
+  padding: 1.15rem 1.1rem 1.15rem 1.2rem;
+  border-radius: 14px;
   color: #f4f7fb;
   background: #1f1f1f;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.2);
   opacity: 0;
   transform: translateX(28px) translateY(8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -195,7 +247,7 @@
 }
 
 .sv-notif-icon {
-  font-size: 1.5rem;
+  font-size: 1.85rem;
   line-height: 1;
   margin-top: 0.1rem;
 }
@@ -206,24 +258,24 @@
 }
 
 .sv-notif-app {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #9aa8b8;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
 }
 
 .sv-troll-level {
-  font-size: 0.88rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: #ffc857;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
 }
 
 .sv-troll-text {
-  font-size: 0.92rem;
+  font-size: 1.08rem;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.4;
   color: #eef3f8;
 }
 
@@ -232,7 +284,7 @@
   border: none;
   background: transparent;
   color: #8a97a8;
-  font-size: 1.2rem;
+  font-size: 1.45rem;
   line-height: 1;
   cursor: pointer;
   padding: 0 0.2rem;
